@@ -1,10 +1,16 @@
-#ifndef _MAIN_H_
-#define _MAIN_H_
+#ifndef MAIN_H
+#define MAIN_H
 
 #include <stdarg.h>
 #include <unistd.h>
-#include <stdlib.h>
 
+/* Main printf function */
 int _printf(const char *format, ...);
+
+/* Helper print functions */
+int print_char(va_list args);
+int print_string(char *s);
+int print_percent(void);
+int print_unknown(char spec);
 
 #endif
