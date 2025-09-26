@@ -38,6 +38,8 @@ int _printf(const char *format, ...)
 				count += print_percent();
 			else if (format[i] == 'd' || format[i] == 'i')
 				count += print_number(va_arg(args, int));
+			else if (format[i] == 'b')
+				count += print_binary(va_arg(args, unsigned int));
 			else
 				count += print_unknown(format[i]);
 		}

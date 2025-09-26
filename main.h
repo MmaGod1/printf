@@ -13,4 +13,5 @@ int print_string(char *s);
 int print_percent(void);
 int print_unknown(char spec);
 int print_number(int n);
+int print_binary(unsigned int n);
 #endif
