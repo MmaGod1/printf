@@ -40,6 +40,16 @@ int _printf(const char *format, ...)
 				count += print_number(va_arg(args, int));
 			else if (format[i] == 'b')
 				count += print_binary(va_arg(args, unsigned int));
+			else if (format[i] == 'd' || format[i] == 'i')
+				count += print_number(va_arg(args, int));
+			else if (format[i] == 'u')
+				count += print_unsigned(va_arg(args, unsigned int));
+			else if (format[i] == 'o')
+				count += print_octal(va_arg(args, unsigned int));
+			else if (format[i] == 'x')
+				count += print_hex(va_arg(args, unsigned int));
+			else if (format[i] == 'X')
+				count += print_HEX(va_arg(args, unsigned int));
 			else
 				count += print_unknown(format[i]);
 		}
