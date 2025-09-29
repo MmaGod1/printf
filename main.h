@@ -33,5 +33,6 @@ int buf_HEX(unsigned int n, char *buffer, int *buf_index);
 int buf_unknown(char spec, char *buffer, int *buf_index);
 void buf_addchar(char *buffer, int *buf_index, char c);
 int buf_S(char *s, char *buffer, int *buf_index);
+int buf_pointer(void *ptr, char *buffer, int *buf_index);
 
 #endif
