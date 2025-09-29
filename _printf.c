@@ -80,6 +80,29 @@ int _printf(const char *format, ...)
 				}
 			}
 
+			/* --- parse precision ( .number or .*) --- */
+			flags.precision = -1; /* default = none */
+			if (format[i] == '.')
+			{
+				i++;
+				if (format[i] == '*')
+				{
+					flags.precision = va_arg(args, int);
+					if (flags.precision < 0)
+						flags.precision = -1; /* negative = ignore precision */
+					i++;
+				}
+				else
+				{
+					flags.precision = 0;
+					while (format[i] >= '0' && format[i] <= '9')
+					{
+						flags.precision = flags.precision * 10 + (format[i] - '0');
+						i++;
+					}
+				}
+			}
+
 			/* --- parse length modifiers: h, l --- */
 			if (format[i] == 'h')
 			{
@@ -101,10 +124,10 @@ int _printf(const char *format, ...)
 
 			/* --- specifiers --- */
 			if (format[i] == 'c')
-				count += buf_char(args, buffer, &buf_index);
+				count += buf_char(args, buffer, &buf_index, flags);
 
 			else if (format[i] == 's')
-				count += buf_string(va_arg(args, char *), buffer, &buf_index);
+				count += buf_string(va_arg(args, char *), buffer, &buf_index, flags);
 
 			else if (format[i] == '%')
 				count += buf_percent(buffer, &buf_index);

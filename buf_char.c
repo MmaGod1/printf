@@ -8,16 +8,20 @@
  *
  * Return: number of characters written (1)
  */
-int buf_char(va_list args, char *buffer, int *buf_index)
+int buf_char(va_list args, char *buffer, int *buf_index, format_flags flags)
 {
-	char c = va_arg(args, int);
+	char c = (char)va_arg(args, int);
+	int count = 0, pad = (flags.width > 1) ? flags.width - 1 : 0;
 
-	buffer[*buf_index] = c;
-	(*buf_index)++;
-	if (*buf_index == 1024)
-	{
-		write(1, buffer, *buf_index);
-		*buf_index = 0;
-	}
-	return (1);
+	if (!flags.minus)
+		while (pad--)
+			count += buf_add(buffer, buf_index, ' ');
+
+	count += buf_add(buffer, buf_index, c);
+
+	if (flags.minus)
+		while (pad--)
+			count += buf_add(buffer, buf_index, ' ');
+
+	return (count);
 }

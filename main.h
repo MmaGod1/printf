@@ -14,6 +14,7 @@
  * @width:  minimum field width (pads output with spaces if shorter than this)
  * @minus:  set to 1 if '-' flag is present (left-align output within field width)
  * @zero:   '0' pad numbers with leading zeros
+ * @precision: if not specified
  * @length: length modifier:
  *          0 = none (default, int/unsigned int)
  *          1 = 'h' (short/unsigned short)
@@ -33,6 +34,7 @@ typedef struct format_flags
     int width;   /* field width */
     int minus;   /* left align (if '-') */
     int zero;
+    int precision; /* -1 if not specified */
     int length;  /* 0 = none, 1 = 'h', 2 = 'l' */
 } format_flags;
 
@@ -54,8 +56,8 @@ int print_HEX(unsigned int n);
 
 
 /* Buffered helpers */
-int buf_char(va_list args, char *buffer, int *buf_index);
-int buf_string(char *s, char *buffer, int *buf_index);
+int buf_char(va_list args, char *buffer, int *buf_index, format_flags flags);
+int buf_string(char *str, char *buffer, int *buf_index, format_flags flags);
 int buf_percent(char *buffer, int *buf_index);
 int buf_number(int n, char *buffer, int *buf_index);
 int buf_binary(unsigned int n, char *buffer, int *buf_index);

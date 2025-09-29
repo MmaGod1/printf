@@ -8,23 +8,31 @@
  *
  * Return: number of characters written
  */
-int buf_string(char *s, char *buffer, int *buf_index)
+int buf_string(char *str, char *buffer, int *buf_index, format_flags flags)
 {
-	int count = 0, i;
+	int len, count = 0, pad, i;
 
-	if (s == NULL)
-		s = "(null)";
+	if (str == NULL)
+		str = "(null)";
 
-	for (i = 0; s[i] != '\0'; i++)
-	{
-		buffer[*buf_index] = s[i];
-		(*buf_index)++;
-		if (*buf_index == 1024)
-		{
-			write(1, buffer, *buf_index);
-			*buf_index = 0;
-		}
-		count++;
-	}
+	len = strlen(str);
+
+	/* apply precision: cut string if needed */
+	if (flags.precision >= 0 && flags.precision < len)
+		len = flags.precision;
+
+	pad = (flags.width > len) ? flags.width - len : 0;
+
+	if (!flags.minus)
+		while (pad--)
+			count += buf_add(buffer, buf_index, ' ');
+
+	for (i = 0; i < len; i++)
+		count += buf_add(buffer, buf_index, str[i]);
+
+	if (flags.minus)
+		while (pad--)
+			count += buf_add(buffer, buf_index, ' ');
+
 	return (count);
 }
