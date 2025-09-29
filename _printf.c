@@ -127,7 +127,10 @@ int _printf(const char *format, ...)
 				count += buf_char(args, buffer, &buf_index, flags);
 
 			else if (format[i] == 's')
+			{
 				count += buf_string(va_arg(args, char *), buffer, &buf_index, flags);
+				continue;
+			}
 
 			else if (format[i] == '%')
 				count += buf_percent(buffer, &buf_index);
