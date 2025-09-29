@@ -8,6 +8,7 @@
  *
  * Return: number of characters written
  */
+
 int buf_string(char *str, char *buffer, int *buf_index, format_flags flags)
 {
 	int len, count = 0, pad, i;
@@ -17,21 +18,21 @@ int buf_string(char *str, char *buffer, int *buf_index, format_flags flags)
 
 	len = strlen(str);
 
-	/* apply precision: cut string if needed */
+	/* Apply precision */
 	if (flags.precision >= 0 && flags.precision < len)
 		len = flags.precision;
 
 	pad = (flags.width > len) ? flags.width - len : 0;
 
 	if (!flags.minus)
-		while (pad--)
+		for (i = 0; i < pad; i++)
 			count += buf_add(buffer, buf_index, ' ');
 
 	for (i = 0; i < len; i++)
 		count += buf_add(buffer, buf_index, str[i]);
 
 	if (flags.minus)
-		while (pad--)
+		for (i = 0; i < pad; i++)
 			count += buf_add(buffer, buf_index, ' ');
 
 	return (count);
