@@ -3,6 +3,8 @@
 
 #include <stdarg.h>
 #include <unistd.h>
+#include <string.h>
+#include <stdio.h>
 
 /**
  * struct format_flags - stores active flag characters and settings for a format specifier
@@ -66,10 +68,11 @@ int buf_pointer(void *ptr, char *buffer, int *buf_index);
 int buf_add(char *buffer, int *buf_index, char c);
 
 /* flags-aware helpers */
-int buf_number_flags(int num, char *buffer, int *buf_index, format_flags flags);
-int buf_uint_flags(unsigned int num, char *buffer, int *buf_index, format_flags flags);
-int buf_octal_flags(unsigned int num, char *buffer, int *buf_index, format_flags flags);
-int buf_hex_flags(unsigned int num, char *buffer, int *buf_index, format_flags flags, int uppercase);
+int buf_number_flags(long num, char *buffer, int *buf_index, format_flags flags);
+int buf_octal_flags(unsigned long num, char *buffer, int *buf_index, format_flags flags);
+int buf_uint_flags(unsigned long num, char *buffer, int *buf_index, format_flags flags);
+int buf_hex_flags(unsigned long num, char *buffer, int *buf_index,
+		format_flags flags, int uppercase);
 int buf_pointer_flags(void *ptr, char *buffer, int *buf_index, format_flags flags);
 int buf_plus_flag(int n, char *buffer, int *buf_index);
 int buf_space_flag(int n, char *buffer, int *buf_index);
