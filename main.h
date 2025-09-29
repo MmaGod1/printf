@@ -19,4 +19,18 @@ int print_octal(unsigned int n);
 int print_hex(unsigned int n);
 int print_HEX(unsigned int n);
 
+
+/* Buffered helpers */
+int buf_char(va_list args, char *buffer, int *buf_index);
+int buf_string(char *s, char *buffer, int *buf_index);
+int buf_percent(char *buffer, int *buf_index);
+int buf_number(int n, char *buffer, int *buf_index);
+int buf_binary(unsigned int n, char *buffer, int *buf_index);
+int buf_uint(unsigned int n, char *buffer, int *buf_index);
+int buf_octal(unsigned int n, char *buffer, int *buf_index);
+int buf_hex(unsigned int n, char *buffer, int *buf_index);
+int buf_HEX(unsigned int n, char *buffer, int *buf_index);
+int buf_unknown(char spec, char *buffer, int *buf_index);
+void buf_addchar(char *buffer, int *buf_index, char c);
+
 #endif
