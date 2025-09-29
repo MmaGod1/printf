@@ -49,6 +49,8 @@ int _printf(const char *format, ...)
 				count += buf_hex(va_arg(args, unsigned int), buffer, &buf_index);
 			else if (format[i] == 'X')
 				count += buf_HEX(va_arg(args, unsigned int), buffer, &buf_index);
+			else if (format[i] == 'S')
+				count += buf_S(va_arg(args, char *), buffer, &buf_index);
 			else
 				count += buf_unknown(format[i], buffer, &buf_index);
 		}
