@@ -48,7 +48,11 @@ int main(void)
 	_printf("%+d", -1024);
 	_printf("There is %+d bytes in %+d KB\n", 1024, 1);
 	_printf("%+d - %+d = %+d\n", 1024, 2048, -1024);
-	_printf("% d", l);
-	_printf("% i", 1024);
+	_printf("% d\n", l);
+	_printf("% i\n", 1024);
+	_printf("%ld\n", -1024L);
+	_printf("%ld\n", 0L);
+	_printf("%h\n");
+	_printf("%l\n");
 	return (0);
 }

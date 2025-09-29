@@ -20,6 +20,7 @@ typedef struct format_flags
 	int plus;   /* '+' */
 	int space;  /* ' ' */
 	int hash;   /* '#' */
+	int length; /* 0 = none, 1 = h, 2 = l */
 } format_flags;
 
 /* Main printf function */
