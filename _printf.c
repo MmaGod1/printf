@@ -14,8 +14,10 @@ int _printf(const char *format, ...)
 {
 	va_list args;
 	char buffer[1024];
-	int buf_index = 0, count = 0, i;
-	format_flags flags = {0, 0, 0}; /* reset per specifier */
+	int buf_index = 0;
+	int count = 0;
+	int i = 0;
+	format_flags flags; /* keep at top for C90 */
 
 	if (format == NULL)
 		return (-1);
@@ -26,14 +28,19 @@ int _printf(const char *format, ...)
 	{
 		if (format[i] == '%')
 		{
+			/* move to char after '%' */
 			i++;
+			/* simple dangling "%" (nothing after '%') */
 			if (format[i] == '\0')
 			{
 				va_end(args);
 				return (-1);
 			}
 
-			/* --- NEW FLAG HANDLING --- */
+			/* reset flags */
+			flags.plus = flags.space = flags.hash = 0;
+
+			/* parse flags: +, space, # */
 			while (format[i] == '+' || format[i] == ' ' || format[i] == '#')
 			{
 				if (format[i] == '+')
@@ -44,8 +51,15 @@ int _printf(const char *format, ...)
 					flags.hash = 1;
 				i++;
 			}
-			/* now format[i] is the specifier */
 
+			/* --- IMPORTANT: check for dangling '%' AFTER parsing flags --- */
+			if (format[i] == '\0')
+			{
+				va_end(args);
+				return (-1);
+			}
+
+			/* now format[i] is the specifier */
 			if (format[i] == 'c')
 				count += buf_char(args, buffer, &buf_index);
 			else if (format[i] == 's')
@@ -67,18 +81,13 @@ int _printf(const char *format, ...)
 			else if (format[i] == 'S')
 				count += buf_S(va_arg(args, char *), buffer, &buf_index);
 			else if (format[i] == 'p')
-				count += buf_pointer_flags(va_arg(args, void *), buffer, &buf_index, flags);
+				count += buf_pointer(va_arg(args, void *), buffer, &buf_index);
 			else
 				count += buf_unknown(format[i], buffer, &buf_index);
 		}
 		else
 		{
-			buffer[buf_index++] = format[i];
-			if (buf_index == 1024)
-			{
-				write(1, buffer, buf_index);
-				buf_index = 0;
-			}
+			buf_addchar(buffer, &buf_index, format[i]);
 			count++;
 		}
 	}
