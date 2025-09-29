@@ -13,6 +13,7 @@
  * @hash:   set to 1 if '#' flag is present (adds prefix for o, x, X formats)
  * @width:  minimum field width (pads output with spaces if shorter than this)
  * @minus:  set to 1 if '-' flag is present (left-align output within field width)
+ * @zero:   '0' pad numbers with leading zeros
  * @length: length modifier:
  *          0 = none (default, int/unsigned int)
  *          1 = 'h' (short/unsigned short)
@@ -31,6 +32,7 @@ typedef struct format_flags
     int hash;    /* '#' */
     int width;   /* field width */
     int minus;   /* left align (if '-') */
+    int zero;
     int length;  /* 0 = none, 1 = 'h', 2 = 'l' */
 } format_flags;
 

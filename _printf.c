@@ -1,5 +1,7 @@
 #include "main.h"
 
+#include "main.h"
+
 /**
  * _printf - produces output according to a format using a local buffer
  * @format: a character string composed of zero or more directives
@@ -38,10 +40,12 @@ int _printf(const char *format, ...)
 			flags.plus = flags.space = flags.hash = 0;
 			flags.width = 0;
 			flags.minus = 0;
+			flags.zero = 0;
 			flags.length = 0;
 
-			/* --- parse flags: +, space, # --- */
-			while (format[i] == '+' || format[i] == ' ' || format[i] == '#')
+			/* --- parse flags: +, space, #, -, 0 --- */
+			while (format[i] == '+' || format[i] == ' ' || format[i] == '#' ||
+					format[i] == '-' || format[i] == '0')
 			{
 				if (format[i] == '+')
 					flags.plus = 1;
@@ -49,6 +53,10 @@ int _printf(const char *format, ...)
 					flags.space = 1;
 				else if (format[i] == '#')
 					flags.hash = 1;
+				else if (format[i] == '-')
+					flags.minus = 1;
+				else if (format[i] == '0')
+					flags.zero = 1;
 				i++;
 			}
 
