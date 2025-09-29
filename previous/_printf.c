@@ -1,7 +1,7 @@
 #include "main.h"
 
 /**
- * _printf - produces output according to a format using a local buffer
+ * _printf_buf - produces output according to a format using a local buffer
  * @format: a character string composed of zero or more directives
  *
  * Description: Same as _printf, but accumulates output in a 1024-char buffer
@@ -15,7 +15,6 @@ int _printf(const char *format, ...)
 	va_list args;
 	char buffer[1024];
 	int buf_index = 0, count = 0, i;
-	format_flags flags = {0, 0, 0}; /* reset per specifier */
 
 	if (format == NULL)
 		return (-1);
@@ -32,20 +31,6 @@ int _printf(const char *format, ...)
 				va_end(args);
 				return (-1);
 			}
-
-			/* --- NEW FLAG HANDLING --- */
-			while (format[i] == '+' || format[i] == ' ' || format[i] == '#')
-			{
-				if (format[i] == '+')
-					flags.plus = 1;
-				else if (format[i] == ' ')
-					flags.space = 1;
-				else if (format[i] == '#')
-					flags.hash = 1;
-				i++;
-			}
-			/* now format[i] is the specifier */
-
 			if (format[i] == 'c')
 				count += buf_char(args, buffer, &buf_index);
 			else if (format[i] == 's')
@@ -53,21 +38,21 @@ int _printf(const char *format, ...)
 			else if (format[i] == '%')
 				count += buf_percent(buffer, &buf_index);
 			else if (format[i] == 'd' || format[i] == 'i')
-				count += buf_number_flags(va_arg(args, int), buffer, &buf_index, flags);
+				count += buf_number(va_arg(args, int), buffer, &buf_index);
 			else if (format[i] == 'b')
 				count += buf_binary(va_arg(args, unsigned int), buffer, &buf_index);
 			else if (format[i] == 'u')
-				count += buf_uint_flags(va_arg(args, unsigned int), buffer, &buf_index, flags);
+				count += buf_uint(va_arg(args, unsigned int), buffer, &buf_index);
 			else if (format[i] == 'o')
-				count += buf_octal_flags(va_arg(args, unsigned int), buffer, &buf_index, flags);
+				count += buf_octal(va_arg(args, unsigned int), buffer, &buf_index);
 			else if (format[i] == 'x')
-				count += buf_hex_flags(va_arg(args, unsigned int), buffer, &buf_index, flags, 0);
+				count += buf_hex(va_arg(args, unsigned int), buffer, &buf_index);
 			else if (format[i] == 'X')
-				count += buf_hex_flags(va_arg(args, unsigned int), buffer, &buf_index, flags, 1);
+				count += buf_HEX(va_arg(args, unsigned int), buffer, &buf_index);
 			else if (format[i] == 'S')
 				count += buf_S(va_arg(args, char *), buffer, &buf_index);
 			else if (format[i] == 'p')
-				count += buf_pointer_flags(va_arg(args, void *), buffer, &buf_index, flags);
+				count += buf_pointer(va_arg(args, void *), buffer, &buf_index);
 			else
 				count += buf_unknown(format[i], buffer, &buf_index);
 		}

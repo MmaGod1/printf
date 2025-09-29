@@ -14,6 +14,7 @@ int main(void)
 	unsigned int ui;
 	void *addr;
 	int n = 42;
+	long int l = INT_MAX;
 
 	len = _printf("Let's try to printf a simple sentence.\n");
 	len2 = printf("Let's try to printf a simple sentence.\n");
@@ -43,5 +44,11 @@ int main(void)
 	_printf("%S\n", "Best\nSchool");
 	_printf("%p\n", &n);
 	_printf("%p", (void *)0x7fff5100b608);
+	_printf("%+d", 1024);
+	_printf("%+d", -1024);
+	_printf("There is %+d bytes in %+d KB\n", 1024, 1);
+	_printf("%+d - %+d = %+d\n", 1024, 2048, -1024);
+	_printf("% d", l);
+	_printf("% i", 1024);
 	return (0);
 }
