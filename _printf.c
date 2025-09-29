@@ -4,17 +4,18 @@
  * _printf - produces output according to a format using a local buffer
  * @format: a character string composed of zero or more directives
  *
- * Return: the number of characters printed excluding the null byte,
- * or -1 if there is an error (e.g., dangling '%' at end of format).
+ * Description: Same as printf, but accumulates output in a 1024-char buffer
+ * and flushes only when full (or at the end). This reduces system calls.
+ *
+ * Return: number of characters printed (excluding null byte),
+ * or -1 on error.
  */
 int _printf(const char *format, ...)
 {
 	va_list args;
 	char buffer[1024];
-	int buf_index = 0;
-	int count = 0;
-	int i = 0;
-	format_flags flags; /* C90 requires declarations at top of block */
+	int buf_index = 0, count = 0, i;
+	format_flags flags; /* declared once for C90 */
 
 	if (format == NULL)
 		return (-1);
@@ -26,6 +27,7 @@ int _printf(const char *format, ...)
 		if (format[i] == '%')
 		{
 			i++;
+
 			if (format[i] == '\0')
 			{
 				va_end(args);
@@ -34,9 +36,11 @@ int _printf(const char *format, ...)
 
 			/* reset flags */
 			flags.plus = flags.space = flags.hash = 0;
+			flags.width = 0;
+			flags.minus = 0;
 			flags.length = 0;
 
-			/* parse flags: +, space, # */
+			/* --- parse flags: +, space, # --- */
 			while (format[i] == '+' || format[i] == ' ' || format[i] == '#')
 			{
 				if (format[i] == '+')
@@ -48,7 +52,27 @@ int _printf(const char *format, ...)
 				i++;
 			}
 
-			/* parse length modifiers: h, l */
+			/* --- parse width (number or *) --- */
+			if (format[i] == '*')
+			{
+				flags.width = va_arg(args, int);
+				if (flags.width < 0)
+				{
+					flags.minus = 1;
+					flags.width = -flags.width;
+				}
+				i++;
+			}
+			else
+			{
+				while (format[i] >= '0' && format[i] <= '9')
+				{
+					flags.width = flags.width * 10 + (format[i] - '0');
+					i++;
+				}
+			}
+
+			/* --- parse length modifiers: h, l --- */
 			if (format[i] == 'h')
 			{
 				flags.length = 1;
@@ -60,54 +84,79 @@ int _printf(const char *format, ...)
 				i++;
 			}
 
+			/* check dangling '%' after parsing */
 			if (format[i] == '\0')
 			{
 				va_end(args);
 				return (-1);
 			}
 
-			/* dispatch by specifier */
+			/* --- specifiers --- */
 			if (format[i] == 'c')
 				count += buf_char(args, buffer, &buf_index);
+
 			else if (format[i] == 's')
 				count += buf_string(va_arg(args, char *), buffer, &buf_index);
+
 			else if (format[i] == '%')
 				count += buf_percent(buffer, &buf_index);
+
 			else if (format[i] == 'd' || format[i] == 'i')
 			{
-				if (flags.length == 2) /* l */
+				if (flags.length == 2) /* long */
 					count += buf_number_flags(va_arg(args, long), buffer, &buf_index, flags);
-				else if (flags.length == 1) /* h */
+				else if (flags.length == 1) /* short */
 					count += buf_number_flags((short)va_arg(args, int), buffer, &buf_index, flags);
 				else
 					count += buf_number_flags(va_arg(args, int), buffer, &buf_index, flags);
 			}
-			else if (format[i] == 'u' || format[i] == 'o' || format[i] == 'x' || format[i] == 'X')
+
+			else if (format[i] == 'u')
 			{
-				unsigned long num;
-
-				if (flags.length == 2) /* l */
-					num = va_arg(args, unsigned long);
-				else if (flags.length == 1) /* h */
-					num = (unsigned short)va_arg(args, unsigned int);
+				if (flags.length == 2)
+					count += buf_uint_flags(va_arg(args, unsigned long), buffer, &buf_index, flags);
+				else if (flags.length == 1)
+					count += buf_uint_flags((unsigned short)va_arg(args, unsigned int), buffer, &buf_index, flags);
 				else
-					num = va_arg(args, unsigned int);
-
-				if (format[i] == 'u')
-					count += buf_uint_flags(num, buffer, &buf_index, flags);
-				else if (format[i] == 'o')
-					count += buf_octal_flags(num, buffer, &buf_index, flags);
-				else if (format[i] == 'x')
-					count += buf_hex_flags(num, buffer, &buf_index, flags, 0);
-				else
-					count += buf_hex_flags(num, buffer, &buf_index, flags, 1);
+					count += buf_uint_flags(va_arg(args, unsigned int), buffer, &buf_index, flags);
 			}
-			else if (format[i] == 'b')
-				count += buf_binary(va_arg(args, unsigned int), buffer, &buf_index);
+
+			else if (format[i] == 'o')
+			{
+				if (flags.length == 2)
+					count += buf_octal_flags(va_arg(args, unsigned long), buffer, &buf_index, flags);
+				else if (flags.length == 1)
+					count += buf_octal_flags((unsigned short)va_arg(args, unsigned int), buffer, &buf_index, flags);
+				else
+					count += buf_octal_flags(va_arg(args, unsigned int), buffer, &buf_index, flags);
+			}
+
+			else if (format[i] == 'x')
+			{
+				if (flags.length == 2)
+					count += buf_hex_flags(va_arg(args, unsigned long), buffer, &buf_index, flags, 0);
+				else if (flags.length == 1)
+					count += buf_hex_flags((unsigned short)va_arg(args, unsigned int), buffer, &buf_index, flags, 0);
+				else
+					count += buf_hex_flags(va_arg(args, unsigned int), buffer, &buf_index, flags, 0);
+			}
+
+			else if (format[i] == 'X')
+			{
+				if (flags.length == 2)
+					count += buf_hex_flags(va_arg(args, unsigned long), buffer, &buf_index, flags, 1);
+				else if (flags.length == 1)
+					count += buf_hex_flags((unsigned short)va_arg(args, unsigned int), buffer, &buf_index, flags, 1);
+				else
+					count += buf_hex_flags(va_arg(args, unsigned int), buffer, &buf_index, flags, 1);
+			}
+
 			else if (format[i] == 'S')
 				count += buf_S(va_arg(args, char *), buffer, &buf_index);
+
 			else if (format[i] == 'p')
 				count += buf_pointer(va_arg(args, void *), buffer, &buf_index);
+
 			else
 				count += buf_unknown(format[i], buffer, &buf_index);
 		}
@@ -118,7 +167,7 @@ int _printf(const char *format, ...)
 		}
 	}
 
-	if (buf_index > 0) /* flush remaining */
+	if (buf_index > 0)
 		write(1, buffer, buf_index);
 
 	va_end(args);

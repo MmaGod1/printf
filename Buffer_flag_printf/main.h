@@ -5,48 +5,26 @@
 #include <unistd.h>
 
 /**
- * struct format_flags - stores active flag characters and settings for a format specifier
- * @plus:   set to 1 if '+' flag is present (forces sign on positive numbers)
- * @space:  set to 1 if ' ' flag is present (prefixes positive numbers with space)
- * @hash:   set to 1 if '#' flag is present (adds prefix for o, x, X formats)
- * @width:  minimum field width (pads output with spaces if shorter than this)
- * @minus:  set to 1 if '-' flag is present (left-align output within field width)
- * @length: length modifier:
- *          0 = none (default, int/unsigned int)
- *          1 = 'h' (short/unsigned short)
- *          2 = 'l' (long/unsigned long)
+ * struct format_flags - stores active flag characters for a format specifier
+ * @plus:  set to 1 if '+' flag is present (forces sign on positive numbers)
+ * @space: set to 1 if ' ' flag is present (prefixes positive numbers with space)
+ * @hash:  set to 1 if '#' flag is present (adds prefix for o, x, X formats)
  *
- * Description:
- * This struct is used inside _printf to keep track of flags, field width,
- * alignment, and length modifiers specified before a conversion specifier.
- * It allows helper functions (e.g., buf_number_flags, buf_hex_flags) to format
- * numbers and strings consistently, handling padding, alignment, and size.
+ * Description: This struct is used inside _printf to keep track
+ * of which flags were specified before a conversion specifier.
+ * It allows helper functions (e.g., buf_number_flags, buf_hex_flags)
+ * to decide how to format the output consistently.
  */
 typedef struct format_flags
 {
-    int plus;    /* '+' */
-    int space;   /* ' ' */
-    int hash;    /* '#' */
-    int width;   /* field width */
-    int minus;   /* left align (if '-') */
-    int length;  /* 0 = none, 1 = 'h', 2 = 'l' */
+	int plus;   /* '+' */
+	int space;  /* ' ' */
+	int hash;   /* '#' */
+	int length; /* 0 = none, 1 = h, 2 = l */
 } format_flags;
-
 
 /* Main printf function */
 int _printf(const char *format, ...);
-
-/* Helper print functions */
-int print_char(va_list args);
-int print_string(char *s);
-int print_percent(void);
-int print_unknown(char spec);
-int print_number(int n);
-int print_binary(unsigned int n);
-int print_unsigned(unsigned int n);
-int print_octal(unsigned int n);
-int print_hex(unsigned int n);
-int print_HEX(unsigned int n);
 
 
 /* Buffered helpers */
