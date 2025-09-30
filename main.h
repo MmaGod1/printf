@@ -82,5 +82,7 @@ int buf_plus_flag(int n, char *buffer, int *buf_index);
 int buf_space_flag(int n, char *buffer, int *buf_index);
 int buf_hash_flag(char specifier, unsigned int n,
 		char *buffer, int *buf_index);
+int buf_reverse(char *str, char *buffer, int *buf_index);
+int buf_rot13(char *str, char *buffer, int *buf_index);
 
 #endif

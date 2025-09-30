@@ -10,7 +10,8 @@ void buf_addchar(char *buffer, int *buf_index, char c)
 {
 	buffer[*buf_index] = c;
 	(*buf_index)++;
-	if (*buf_index == 1024)
+
+	if (*buf_index == 1024 || c == '\n')
 	{
 		write(1, buffer, *buf_index);
 		*buf_index = 0;

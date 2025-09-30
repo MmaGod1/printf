@@ -129,7 +129,6 @@ int _printf(const char *format, ...)
 			else if (format[i] == 's')
 			{
 				count += buf_string(va_arg(args, char *), buffer, &buf_index, flags);
-				continue;
 			}
 
 			else if (format[i] == '%')
@@ -190,6 +189,11 @@ int _printf(const char *format, ...)
 
 			else if (format[i] == 'p')
 				count += buf_pointer(va_arg(args, void *), buffer, &buf_index);
+			else if (format[i] == 'r')
+				count += buf_reverse(va_arg(args, char *), buffer, &buf_index);
+
+			else if (format[i] == 'R')
+				count += buf_rot13(va_arg(args, char *), buffer, &buf_index);
 
 			else
 				count += buf_unknown(format[i], buffer, &buf_index);
@@ -200,9 +204,11 @@ int _printf(const char *format, ...)
 			count++;
 		}
 	}
-
 	if (buf_index > 0)
+	{
 		write(1, buffer, buf_index);
+		buf_index = 0;
+	}
 
 	va_end(args);
 	return (count);
